@@ -6,6 +6,10 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 const app = express();
+app.use(function(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "https://sri-abirami-finance-frontend.onrender.com");
+  next();
+});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
