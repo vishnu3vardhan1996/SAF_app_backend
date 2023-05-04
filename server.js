@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+// app.use(cors());
 
 const corsOptions = {
   origin: ['https://sri-abirami-finance-frontend.onrender.com']
@@ -517,6 +517,10 @@ app.post("/interest_update", function (req, res) {
 
   res.redirect(`/cust_update/${interestCustCardNo}`);
 
+})
+
+app.get("/sample", function (req, res) {
+  res.send('Success!')
 })
 
 app.listen(3001, () => {
