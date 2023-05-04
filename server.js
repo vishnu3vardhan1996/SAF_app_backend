@@ -4,12 +4,17 @@ require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const cors = require('cors');
 
 const app = express();
-app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "https://sri-abirami-finance-frontend.onrender.com");
-  next();
-});
+app.use(cors());
+
+const corsOptions = {
+  origin: ['https://sri-abirami-finance-frontend.onrender.com']
+};
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
