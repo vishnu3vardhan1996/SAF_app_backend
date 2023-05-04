@@ -361,7 +361,7 @@ app.post("/registration", (req, res) => {
   })
   denomiDetails.save();
 
-  res.redirect("/");
+  res.redirect("https://sri-abirami-finance-frontend.onrender.com/");
 });
 
 let custUpdateNo;
