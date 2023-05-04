@@ -18,6 +18,10 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/public/index.html"));
+});
+
 //Connect to MongoDB with help of Mongoose
 const mongodbCred = process.env.MONGO_DB_CRED
 // mongodb://127.0.0.1:27017/saf
