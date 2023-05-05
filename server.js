@@ -5,15 +5,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "../client/public")));
+// app.use(express.static(path.join(__dirname, "../client/public")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/public", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/public", "index.html"));
+// });
 
 app.use(cors());
 
