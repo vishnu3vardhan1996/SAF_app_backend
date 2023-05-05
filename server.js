@@ -463,7 +463,7 @@ app.post("/cust_update/:cardno", (req, res) => {
     });
   }
 
-  res.redirect("/cust_update/:cardno");
+  res.redirect("https://sri-abirami-finance-frontend.onrender.com/cust_update/:cardno");
 })
 
 
@@ -522,7 +522,7 @@ app.post("/interest_update", function (req, res) {
   // console.log(interestReceivedDate);
   // console.log(interestCustCardNo);
 
-  res.redirect(`/cust_update/${interestCustCardNo}`);
+  res.redirect(`https://sri-abirami-finance-frontend.onrender.com/cust_update/${interestCustCardNo}`);
 
 })
 
