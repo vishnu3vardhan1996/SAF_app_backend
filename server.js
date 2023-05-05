@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 
 const corsOptions = {
-  origin: ['https://sri-abirami-finance-frontend.onrender.com']
+  origin: ['https://sri-abirami-finance.onrender.com']
 };
 
 app.use(cors(corsOptions));
@@ -368,7 +368,7 @@ app.post("/registration", (req, res) => {
   })
   denomiDetails.save();
 
-  res.redirect("/");
+  res.redirect("https://sri-abirami-finance.onrender.com");
 });
 
 let custUpdateNo;
