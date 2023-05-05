@@ -121,7 +121,7 @@ let paymentSettlement;
 
 app.post("/customer_details/:name", (req, res) => {
   paymentSettlement = req.body;
-  res.redirect("/customer_details/:name");
+  res.redirect("https://sri-abirami-finance-frontend.onrender.com/customer_details/:name");
 })
 
 //, Status: paymentStatus
@@ -286,7 +286,7 @@ app.get("/customer_details/:name", function (req, res) {
         res.status(500).send('Error searching for users');
       })
   }
-  // res.redirect("/customer_details/:name");
+  res.redirect("https://sri-abirami-finance-frontend.onrender.com/customer_details/:name");
 
 });
 
@@ -499,6 +499,8 @@ app.get("/cust_update/:cardno", (req, res) => {
       console.log(err);
       res.status(500).send('Error searching for users');
     })
+
+    res.redirect("https://sri-abirami-finance-frontend.onrender.com/cust_update/:cardno")
 })
 
 app.post("/interest_update", function (req, res) {
