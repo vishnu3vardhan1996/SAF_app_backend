@@ -290,7 +290,7 @@ app.get("/customer_details/:name", function (req, res) {
 
 });
 
-// Customer Number, Date, Amount, Name, Husband/Father Name, Address, Mobile number, 
+// Customer Number, Date, Amount, Name, Husband/Father Name, Address, Mobile number
 // Gold Details, Gold Grams, Gold Actual Value, Attender, Aadhar Number (optional).
 
 app.post("/registration", (req, res) => {
