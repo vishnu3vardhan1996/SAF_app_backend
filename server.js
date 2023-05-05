@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 
 const corsOptions = {
-  origin: ['https://sri-abirami-finance.onrender.com']
+  origin: [process.env.REACT_URL]
 };
 
 app.use(cors(corsOptions));
@@ -368,7 +368,7 @@ app.post("/registration", (req, res) => {
   })
   denomiDetails.save();
 
-  res.redirect("https://sri-abirami-finance.onrender.com");
+  res.redirect(process.env.REACT_URL);
 });
 
 let custUpdateNo;
@@ -463,7 +463,7 @@ app.post("/cust_update/:cardno", (req, res) => {
     });
   }
 
-  res.redirect("https://sri-abirami-finance.onrender.com/cust_update/:cardno");
+  res.redirect(`${process.env.REACT_URL}/cust_update/:cardno`);
 })
 
 
@@ -522,7 +522,7 @@ app.post("/interest_update", function (req, res) {
   // console.log(interestReceivedDate);
   // console.log(interestCustCardNo);
 
-  res.redirect(`https://sri-abirami-finance.onrender.com/cust_update/${interestCustCardNo}`);
+  res.redirect(`${process.env.REACT_URL}/cust_update/${interestCustCardNo}`);
 
 })
 
