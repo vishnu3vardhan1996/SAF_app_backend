@@ -7,9 +7,15 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 const path = require('path');
 
-
 const app = express();
-// app.use(cors());
+
+app.use(express.static(path.join(__dirname, "../client/public")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/public", "index.html"));
+});
+
+app.use(cors());
 
 const corsOptions = {
   origin: ['https://sri-abirami-finance-frontend.onrender.com']
@@ -19,10 +25,6 @@ app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/public/index.html"));
-});
 
 //Connect to MongoDB with help of Mongoose
 const mongodbCred = process.env.MONGO_DB_CRED
