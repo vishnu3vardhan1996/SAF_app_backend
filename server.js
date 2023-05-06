@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const { spawn } = require('child_process');
 
 const app = express();
 
@@ -465,6 +466,54 @@ app.post("/registration", (req, res) => {
     Total: totalOfAll
   })
   denomiDetails.save();
+
+  // Define your cURL command as an array of arguments
+
+  const curlCmd = [
+    'curl',
+    '-i',
+    '-X',
+    'POST',
+    'https://graph.facebook.com/v16.0/103113806119286/messages',
+    '-H',
+    'Authorization: Bearer EABiWd4RqZBKABAKo8WmuH990JvTMidafBGPRTbED4ZB5TeEJ080wNo42LzlbfZCevIhTGyUSw6epKSxbrD2dKwvoDo4u2kmMPGAO2571Qls6ZBALZAEhgfk6ZBUCN2ZCHiYhZCZAlYQMXjWYCJn6S9n6qmJemBjmHpCaycYFJcXoeK6VoiWNAwgRo55ci9ZA8Vralm35yEmc0SQAZDZD',
+    '-H',
+    'Content-Type: application/json',
+    '-d',
+    '{ "messaging_product": "whatsapp", "to": "919976235968", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }'
+  ];
+  
+  const child = spawn(curlCmd[0], curlCmd.slice(1));
+  
+  child.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+  
+  child.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+  
+  child.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
+
+
+// Spawn a new process to execute the cURL command
+const curlProcess = spawn(curlCmd[0], curlCmd.slice(1));
+
+// Listen to the output events of the child process
+curlProcess.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+});
+
+curlProcess.stderr.on('data', (data) => {
+  console.error(`stderr: ${data}`);
+});
+
+// Listen to the exit event of the child process
+curlProcess.on('close', (code) => {
+  console.log(`child process exited with code ${code}`);
+});
 
   res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
 });
