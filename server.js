@@ -5,6 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -105,14 +106,25 @@ const CommSchema = mongoose.model("Comments", Comments);
 const Interests = new mongoose.Schema({
   Customer_number: { type: String, unique: true },
   Interest: {
-    Interest_Received_Date: {type: [String]},
-    Interest: {type: [Number]},
-    Interest_Rate: {type: [Number]},
-    Interest_for_Date: {type: [String]}
+    Interest_Received_Date: { type: [String] },
+    Interest: { type: [Number] },
+    Interest_Rate: { type: [Number] },
+    Interest_for_Date: { type: [String] }
   }
 });
 
 const InterestSchema = mongoose.model("Interests", Interests);
+
+const UserDetails = new mongoose.Schema({
+  First_name: String,
+  Last_name: String,
+  Username: String,
+  Password: String
+});
+
+const UserDetailsSchema = mongoose.model("UserDetails", UserDetails);
+
+//////////////////////////////////////////////////////
 
 let userDetailsDB = [];
 
@@ -124,7 +136,93 @@ app.post("/customer_details/:name", (req, res) => {
   res.redirect("/customer_details/:name");
 })
 
-//, Status: paymentStatus
+app.post("/signup", function (req, res) {
+
+  const loginDetails = req.body.logindetails;
+
+  UserDetailsSchema.findOne({ Username: loginDetails })
+    .then(doc => {
+      console.log(doc.Username)
+      res.redirect(`${process.env.REACT_URL}/signup/failure`)
+    })
+    .catch(err => {
+      const fName = req.body.fiName;
+      const lName = req.body.laname;
+      const loginDetails = req.body.logindetails;
+      const password = req.body.password_detail;
+
+      bcrypt.genSalt(10, function (err, salt) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        // hash the password using the salt
+        bcrypt.hash(password, salt, function (err, hash) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+
+          // save the hash to your database
+          console.log(hash);
+          const signUpUserDetails = new UserDetailsSchema({
+            First_name: fName,
+            Last_name: lName,
+            Username: loginDetails,
+            Password: hash
+          })
+          signUpUserDetails.save();
+        });
+      });
+      res.redirect(process.env.REACT_URL);
+    });
+})
+
+app.post("/login", function (req, res) {
+  const loginDetails = req.body.logindetails;
+
+  UserDetailsSchema.findOne({ Username: loginDetails })
+    .then(doc => {
+      console.log(doc.Password);
+      const enteredPassword = req.body.password_detail;
+      const storedHash = doc.Password;
+
+      var loggedin;
+
+      bcrypt.compare(enteredPassword, storedHash, function (err, result) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        if (result) {
+          console.log('Passwords match!');
+          loggedin = "success";
+          // res.redirect(process.env.REACT_URL);
+          res.redirect(process.env.REACT_URL);
+        } else {
+          console.log('Passwords do not match.');
+          loggedin = "failed";
+          // res.send('Passwords do not match.');
+          res.redirect(`${process.env.REACT_URL}/login/failure`)
+        }
+      });
+      // console.log(loggedin);
+      // if (loggedin === "success") {
+      //   res.redirect(process.env.REACT_URL);
+      // }
+      // else {
+      //   res.send("Passwords do not match.")
+      // }
+      
+    })
+    .catch(err => {
+      // console.error(err);
+      res.send("You aren't a authenticated user");
+    })
+
+})
 
 app.get("/customer_details/:name", function (req, res) {
   const paymentStatus = paymentSettlement.payment_status;
@@ -455,12 +553,12 @@ app.post("/cust_update/:cardno", (req, res) => {
 
   if (custNoFromIndividualComp) {
     CommSchema.findOneAndUpdate({ Customer_number: custNoFromIndividualComp }, textValueSaveInDB, { upsert: true, new: true })
-    .then(doc => {
-      // console.log(doc);
-    })
-    .catch(err => {
-      // console.log(err);
-    });
+      .then(doc => {
+        // console.log(doc);
+      })
+      .catch(err => {
+        // console.log(err);
+      });
   }
 
   res.redirect(`${process.env.REACT_URL}/cust_update/:cardno`);
