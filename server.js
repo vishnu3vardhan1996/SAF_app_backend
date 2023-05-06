@@ -175,7 +175,7 @@ app.post("/signup", function (req, res) {
           signUpUserDetails.save();
         });
       });
-      res.redirect(process.env.REACT_URL);
+      res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
     });
 })
 
@@ -200,12 +200,12 @@ app.post("/login", function (req, res) {
           console.log('Passwords match!');
           loggedin = "success";
           // res.redirect(process.env.REACT_URL);
-          res.redirect(process.env.REACT_URL);
+          res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
         } else {
           console.log('Passwords do not match.');
           loggedin = "failed";
           // res.send('Passwords do not match.');
-          res.redirect(`${process.env.REACT_URL}/login/failure`)
+          res.redirect(`${`${process.env.REACT_URL}/cust_bio_data`}/login/failure`)
         }
       });
       // console.log(loggedin);
@@ -466,7 +466,7 @@ app.post("/registration", (req, res) => {
   })
   denomiDetails.save();
 
-  res.redirect(process.env.REACT_URL);
+  res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
 });
 
 let custUpdateNo;
