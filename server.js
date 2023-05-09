@@ -25,7 +25,7 @@ const { spawn } = require("child_process");
 
 const app = express();
 
-// app.use(express.static(path.join(__dirname, "../client/public")));
+// app.use(express.static(path.join(__dirname, "../client/public")))
 
 // app.get("*", (req, res) => {
 //   res.sendFile(path.join(__dirname, "../client/public", "index.html"));
@@ -46,7 +46,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize client.
 // const createClient = redis.createClient;;
-let redisClient = createClient()
+let redisClient = createClient(process.env.REDIS_URL)
 redisClient.connect().catch(console.error)
 
 let redisStore = new RedisStore({
