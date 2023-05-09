@@ -482,21 +482,6 @@ app.post("/registration", (req, res) => {
     '-d',
     '{ "messaging_product": "whatsapp", "to": "919976235968", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }'
   ];
-  
-  const child = spawn(curlCmd[0], curlCmd.slice(1));
-  
-  child.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
-  });
-  
-  child.stderr.on('data', (data) => {
-    console.error(`stderr: ${data}`);
-  });
-  
-  child.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
-  });
-
 
 // Spawn a new process to execute the cURL command
 const curlProcess = spawn(curlCmd[0], curlCmd.slice(1));
