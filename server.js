@@ -6,9 +6,12 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 // const cors = require("cors");
 // const bcrypt = require('bcrypt');
-const session = require("express-session");
-const {RedisStore} = require("connect-redis");
-const redisClient = require("redis").createClient();
+import RedisStore from "connect-redis";
+import session from "express-session";
+import {createClient} from "redis";
+// const session = require("express-session");
+// const RedisStore = require("connect-redis")(session);
+// const redisClient = require("redis").createClient();
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const router = express.Router();
@@ -34,11 +37,19 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const redisUse = new RedisStore({ client: redisClient });
+// const redisUse = ;
+
+// Initialize client.
+let redisClient = createClient()
+redisClient.connect().catch(console.error)
+
+let redisStore = new RedisStore({
+  client: redisClient,
+});
 
 //Passport Authentication
 app.use(session({
-  store: redisUse,
+  store: redisStore,
   secret: "Sri Abirami Finance Kuruchikottai",
   resave: false,
   saveUninitialized: false
