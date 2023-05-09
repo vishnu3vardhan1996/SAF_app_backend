@@ -25,7 +25,7 @@ const { spawn } = require("child_process");
 
 const app = express();
 
-// app.use(express.static(path.join(__dirname, "../client/public")))
+// app.use(express.static(path.join(__dirname, "../client/public")));
 
 // app.get("*", (req, res) => {
 //   res.sendFile(path.join(__dirname, "../client/public", "index.html"));
