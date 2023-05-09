@@ -34,9 +34,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const redisUse = new RedisStore({ client: redisClient });
+
 //Passport Authentication
 app.use(session({
-  store: new RedisStore({ client: redisClient }),
+  store: redisUse,
   secret: "Sri Abirami Finance Kuruchikottai",
   resave: false,
   saveUninitialized: false
