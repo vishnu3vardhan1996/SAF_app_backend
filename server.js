@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 // const bcrypt = require('bcrypt');
 const session = require("express-session");
+const RedisStore = require('connect-redis')(session);
+const redisClient = require('redis').createClient();
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const router = express.Router();
@@ -34,6 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //Passport Authentication
 app.use(session({
+  store: new RedisStore({ client: redisClient }),
   secret: "Sri Abirami Finance Kuruchikottai",
   resave: false,
   saveUninitialized: false
@@ -171,7 +174,7 @@ function isAuthenticated(req, res, next) {
   res.redirect(`${process.env.REACT_URL}/login`);
 }
 
-app.use(process.env.REACT_URL, require('./routes'));
+app.use(process.env.REACT_URL, router);
 
 app.post("/signup", function (req, res) {
 
