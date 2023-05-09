@@ -1,18 +1,18 @@
 // const React = require("react");
 // const App = require("./src/index");
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const cors = require('cors');
+// const cors = require("cors");
 // const bcrypt = require('bcrypt');
 const session = require("express-session");
-const RedisStore = require('connect-redis')(session);
-const redisClient = require('redis').createClient();
+const RedisStore = require("connect-redis");
+const redisClient = require("redis").createClient();
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const router = express.Router();
-const { spawn } = require('child_process');
+const { spawn } = require("child_process");
 
 
 const app = express();
@@ -23,13 +23,13 @@ const app = express();
 //   res.sendFile(path.join(__dirname, "../client/public", "index.html"));
 // });
 
-app.use(cors());
+// app.use(cors());
 
-const corsOptions = {
-  origin: [process.env.REACT_URL]
-};
+// const corsOptions = {
+//   origin: [process.env.REACT_URL]
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
