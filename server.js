@@ -46,8 +46,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize client.
 // const createClient = redis.createClient;;
-let redisClient = createClient(process.env.REDIS_URL)
-redisClient.connect().catch(console.error)
+let redisClient = createClient(process.env.REDIS_URL);
+redisClient.connect().catch(console.error);
 
 let redisStore = new RedisStore({
   client: redisClient
