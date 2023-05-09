@@ -47,7 +47,7 @@ const mongodbCred = process.env.MONGO_DB_CRED
 // mongodb://127.0.0.1:27017/saf
 // mongodb+srv://vishnu3vardhan1996:<password>@sriabiramifinance.9qlxcqx.mongodb.net/test
 mongoose.connect(mongodbCred, { useNewUrlParser: true });
-mongoose.set("useCreateIndex", true);
+mongoose.set("createIndex", true);
 
 const db = mongoose.connection;
 
@@ -171,7 +171,7 @@ function isAuthenticated(req, res, next) {
   res.redirect(`${process.env.REACT_URL}/login`);
 }
 
-app.use(process.env.REACT_URL, require('./routes'));git 
+app.use(process.env.REACT_URL, require('./routes'));
 
 app.post("/signup", function (req, res) {
 
