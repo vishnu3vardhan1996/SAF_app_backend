@@ -10,8 +10,8 @@ const mongoose = require("mongoose");
 // import session from "express-session";
 // import {createClient} from "redis";
 const session = require("express-session");
-const RedisStore = require("connect-redis")(session);
-const { createClient } = require("redis");
+const RedisStore = require("connect-redis")(session)
+const { createClient } = require("redis")
 // const redis = require("redis");
 // const redis = require("redis");
 // const session = require("express-session");
@@ -51,7 +51,7 @@ redisClient.connect().catch(console.error);
 
 let redisStore = new RedisStore({
   client: redisClient
-});
+})
 
 //Passport Authentication
 app.use(session({
@@ -59,7 +59,7 @@ app.use(session({
   secret: "Sri Abirami Finance Kuruchikottai",
   resave: false,
   saveUninitialized: false
-}));
+}))
 
 app.use(passport.initialize());
 app.use(passport.session());
