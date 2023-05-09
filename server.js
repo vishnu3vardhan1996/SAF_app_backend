@@ -56,9 +56,9 @@ let redisStore = new RedisStore({
 //Passport Authentication
 app.use(session({
   store: redisStore,
-  secret: "Sri Abirami Finance Kuruchikottai",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  secret: "Sri Abirami Finance Kuruchikottai",
 }))
 
 app.use(passport.initialize());
