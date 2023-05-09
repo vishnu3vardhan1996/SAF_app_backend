@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 // import session from "express-session";
 // import {createClient} from "redis";
 const session = require("express-session");
-const RedisStore = new (require("connect-redis").default)(session);
+const RedisStore = require("connect-redis").default(session);
 const { createClient } = require("redis");
 // const redis = require("redis");
 // const redis = require("redis");
