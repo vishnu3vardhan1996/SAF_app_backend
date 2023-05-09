@@ -6,9 +6,14 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 // const cors = require("cors");
 // const bcrypt = require('bcrypt');
-import RedisStore from "connect-redis";
-import session from "express-session";
-import {createClient} from "redis";
+// import RedisStore from "connect-redis";
+// import session from "express-session";
+// import {createClient} from "redis";
+const RedisStore = require("connect-redis").default;
+const session = require("express-session");
+const { createClient } = require("redis");
+// const redis = require("redis");
+// const redis = require("redis");
 // const session = require("express-session");
 // const RedisStore = require("connect-redis")(session);
 // const redisClient = require("redis").createClient();
@@ -40,6 +45,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // const redisUse = ;
 
 // Initialize client.
+// const createClient = redis.createClient;;
 let redisClient = createClient()
 redisClient.connect().catch(console.error)
 
