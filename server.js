@@ -50,8 +50,7 @@ let redisClient = createClient(process.env.REDIS_URL)
 redisClient.connect().catch(console.error)
 
 let redisStore = new RedisStore({
-  client: redisClient,
-  prefix: "myapp:",
+  client: redisClient
 });
 
 //Passport Authentication
