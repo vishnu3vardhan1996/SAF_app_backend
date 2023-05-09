@@ -5,8 +5,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
+const session = require("express-session");
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
+const router = express.Router();
 const { spawn } = require('child_process');
+
 
 const app = express();
 
@@ -27,13 +32,39 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//Passport Authentication
+app.use(session({
+  secret: "Sri Abirami Finance Kuruchikottai",
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 //Connect to MongoDB with help of Mongoose
 const mongodbCred = process.env.MONGO_DB_CRED
 // mongodb://127.0.0.1:27017/saf
 // mongodb+srv://vishnu3vardhan1996:<password>@sriabiramifinance.9qlxcqx.mongodb.net/test
 mongoose.connect(mongodbCred, { useNewUrlParser: true });
+mongoose.set("useCreateIndex", true);
 
 const db = mongoose.connection;
+
+//User Cred DB
+const UserDetails = new mongoose.Schema({
+  Username: String,
+  Password: String
+});
+
+UserDetails.plugin(passportLocalMongoose);
+
+const UserDetailsSchema = mongoose.model("UserDetails", UserDetails);
+
+passport.use(UserDetailsSchema.createStrategy());
+
+passport.serializeUser(UserDetailsSchema.serializeUser());
+passport.deserializeUser(UserDetailsSchema.deserializeUser());
 
 // Customer Number, Date, Amount, Name, Husband/Father Name, Address, Mobile number, 
 // Gold Details, Gold Grams, Gold Actual Value, Attender, Aadhar Number (optional).
@@ -116,15 +147,6 @@ const Interests = new mongoose.Schema({
 
 const InterestSchema = mongoose.model("Interests", Interests);
 
-const UserDetails = new mongoose.Schema({
-  First_name: String,
-  Last_name: String,
-  Username: String,
-  Password: String
-});
-
-const UserDetailsSchema = mongoose.model("UserDetails", UserDetails);
-
 //////////////////////////////////////////////////////
 
 let userDetailsDB = [];
@@ -135,93 +157,120 @@ let paymentSettlement;
 app.post("/customer_details/:name", (req, res) => {
   paymentSettlement = req.body;
   res.redirect("/customer_details/:name");
-})
+});
+
+// This is your protected route
+router.get(`${process.env.REACT_URL}/cust_bio_data`, isAuthenticated, (req, res) => {
+  res.redirect('You have access to the protected route');
+});
+
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect(`${process.env.REACT_URL}/login`);
+}
+
+app.use(process.env.REACT_URL, require('./routes'));git 
 
 app.post("/signup", function (req, res) {
 
   const loginDetails = req.body.logindetails;
+  const passwordDetails = req.body.password_detail;
 
-  UserDetailsSchema.findOne({ Username: loginDetails })
-    .then(doc => {
-      console.log(doc.Username)
+  UserDetailsSchema.register({username: loginDetails}, passwordDetails, function (err, user) {
+    if (err) {
+      console.log(err),
       res.redirect(`${process.env.REACT_URL}/signup/failure`)
-    })
-    .catch(err => {
-      const fName = req.body.fiName;
-      const lName = req.body.laname;
-      const loginDetails = req.body.logindetails;
-      const password = req.body.password_detail;
-
-      bcrypt.genSalt(10, function (err, salt) {
-        if (err) {
-          console.log(err);
-          return;
-        }
-
-        // hash the password using the salt
-        bcrypt.hash(password, salt, function (err, hash) {
-          if (err) {
-            console.log(err);
-            return;
-          }
-
-          // save the hash to your database
-          console.log(hash);
-          const signUpUserDetails = new UserDetailsSchema({
-            First_name: fName,
-            Last_name: lName,
-            Username: loginDetails,
-            Password: hash
-          })
-          signUpUserDetails.save();
-        });
+    }
+    else {
+      passport.authenticate("local")(req, res, function() {
+        res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
       });
-      res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-    });
+    }
+  });
+
+  // UserDetailsSchema.findOne({ Username: loginDetails })
+  //   .then(doc => {
+  //     console.log(doc.Username)
+  //     res.redirect(`${process.env.REACT_URL}/signup/failure`)
+  //   })
+  //   .catch(err => {
+  //     const fName = req.body.fiName;
+  //     const lName = req.body.laname;
+  //     const loginDetails = req.body.logindetails;
+  //     const password = req.body.password_detail;
+
+  //     bcrypt.genSalt(10, function (err, salt) {
+  //       if (err) {
+  //         console.log(err);
+  //         return;
+  //       }
+
+  //       // hash the password using the salt
+  //       bcrypt.hash(password, salt, function (err, hash) {
+  //         if (err) {
+  //           console.log(err);
+  //           return;
+  //         }
+
+  //         // save the hash to your database
+  //         console.log(hash);
+  //         const signUpUserDetails = new UserDetailsSchema({
+  //           First_name: fName,
+  //           Last_name: lName,
+  //           Username: loginDetails,
+  //           Password: hash
+  //         })
+  //         signUpUserDetails.save();
+  //       });
+  //     });
+  //     res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+  //   });
 })
 
 app.post("/login", function (req, res) {
   const loginDetails = req.body.logindetails;
 
-  UserDetailsSchema.findOne({ Username: loginDetails })
-    .then(doc => {
-      console.log(doc.Password);
-      const enteredPassword = req.body.password_detail;
-      const storedHash = doc.Password;
+  // UserDetailsSchema.findOne({ Username: loginDetails })
+    // .then(doc => {
+    //   console.log(doc.Password);
+    //   const enteredPassword = req.body.password_detail;
+    //   const storedHash = doc.Password;
 
-      var loggedin;
+    //   var loggedin;
 
-      bcrypt.compare(enteredPassword, storedHash, function (err, result) {
-        if (err) {
-          console.log(err);
-          return;
-        }
+    //   bcrypt.compare(enteredPassword, storedHash, function (err, result) {
+    //     if (err) {
+    //       console.log(err);
+    //       return;
+    //     }
 
-        if (result) {
-          console.log('Passwords match!');
-          loggedin = "success";
-          // res.redirect(process.env.REACT_URL);
-          res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-        } else {
-          console.log('Passwords do not match.');
-          loggedin = "failed";
-          // res.send('Passwords do not match.');
-          res.redirect(`${`${process.env.REACT_URL}/cust_bio_data`}/login/failure`)
-        }
-      });
-      // console.log(loggedin);
-      // if (loggedin === "success") {
-      //   res.redirect(process.env.REACT_URL);
-      // }
-      // else {
-      //   res.send("Passwords do not match.")
-      // }
+    //     if (result) {
+    //       console.log('Passwords match!');
+    //       loggedin = "success";
+    //       // res.redirect(process.env.REACT_URL);
+    //       res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+    //     } else {
+    //       console.log('Passwords do not match.');
+    //       loggedin = "failed";
+    //       // res.send('Passwords do not match.');
+    //       res.redirect(`${`${process.env.REACT_URL}/cust_bio_data`}/login/failure`)
+    //     }
+    //   });
+    //   // console.log(loggedin);
+    //   // if (loggedin === "success") {
+    //   //   res.redirect(process.env.REACT_URL);
+    //   // }
+    //   // else {
+    //   //   res.send("Passwords do not match.")
+    //   // }
       
-    })
-    .catch(err => {
-      // console.error(err);
-      res.send("You aren't a authenticated user");
-    })
+    // })
+    // .catch(err => {
+    //   // console.error(err);
+    //   res.send("You aren't a authenticated user");
+    // })
 
 })
 
