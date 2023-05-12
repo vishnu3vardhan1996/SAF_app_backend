@@ -228,7 +228,7 @@ app.post("/signup_27031996_saf", function (req, res) {
 
   res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
 
-  })
+  // })
 
   // passport.authenticate("local", function(err, user, info) {
   //   if (err) {
