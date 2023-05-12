@@ -652,11 +652,11 @@ let oneNoZero;
 
 app.post("/cust_update/:cardno", (req, res) => {
   custUpdateNo = req.body.payment_status;
-  // console.log(custUpdateNo);
+  console.log(custUpdateNo);
   cardNoOfCustomer = req.body.card_no;
-  // console.log(cardNoOfCustomer);
+  console.log(cardNoOfCustomer);
   paymentClosedDate = req.body.payment_close_date;
-  // console.log(paymentClosedDate);
+  console.log(paymentClosedDate);
   textAreaValue = req.body.comments;
   console.log(textAreaValue);
   custNoFromIndividualComp = req.body.Cust_No;
@@ -736,7 +736,7 @@ let InterestsDB = [];
 app.get("/cust_update/:cardno", (req, res) => {
   // custUpdateNo=req.body;
   const custCardNo = req.params.cardno;
-  console.log(custCardNo);
+  // console.log(custCardNo);
 
   Promise.all([
     Saf.find({ Customer_number: custCardNo }, { _id: 0 }),
