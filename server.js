@@ -11,7 +11,7 @@ const mongoose = require("mongoose");
 // import {createClient} from "redis";
 const session = require("express-session");
 const RedisStore = require("connect-redis")(session);
-const { createClient } = require("redis");
+const redis = require("redis");
 // const redis = require("redis");
 // const redis = require("redis");
 // const session = require("express-session");
@@ -46,21 +46,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize client.
 // const createClient = redis.createClient;;
-let redisClient = createClient({ 
-  url: process.env.REDIS_URL, 
-});
+// let redisClient = createClient({ 
+//   url: process.env.REDIS_URL 
+// });
 // redisClient.connect().catch(console.error);
 
-let redisStore = new RedisStore({
-  client: redisClient
-})
+// let redisStore = new RedisStore({
+//   client: redisClient
+// })
+
+//Redis Client Connect
+const client = redis.createClient({
+  host: 'oregon-redis.render.com',
+  port: 6379,
+  password: 'QTWDfDMqMfqucdd3E9rOK7yPOZDM7Si7'
+});
+
+client.on('connect', function() {
+  console.log('Connected to Redis');
+});
 
 //Passport Authentication
 app.use(session({
-  store: redisStore,
+  store: new RedisStore({ client }),
   resave: false,
   saveUninitialized: false,
-  secret: "Sri Abirami Finance Kuruchikottai",
+  secret: "Sri Abirami Finance Kuruchikottai"
 }))
 
 app.use(passport.initialize());
