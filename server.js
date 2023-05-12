@@ -213,22 +213,22 @@ app.post("/signup_27031996_saf", function (req, res) {
   const loginDetails = req.body.logindetails;
   const passwordDetails = req.body.password_detail;
 
-  UserDetailsSchema.register({username: loginDetails}, passwordDetails, function (err, user) {
-    if (err) {
-      console.log(err);
-      res.redirect(`${process.env.REACT_URL}/signup/failure`);
-    }
-    else if (user) {
-      passport.authenticate("local")(req, res, function() {
+  UserDetailsSchema.register({username: loginDetails}, passwordDetails, 
+
+    passport.authenticate("local", function(err, user, info) {
+      if (err) {
+        console.log(err);
+        res.redirect(`${process.env.REACT_URL}/signup/failure`);
+      } else if (user) {
         console.log(`${process.env.REACT_URL}/cust_bio_data`);
         res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-      })
-      
-    }
-    else {
-      console.log("Some Issue, Debug it...");
-    }
-  });
+      } else {
+        console.log("Some Issue, Debug it...");
+      }
+    })(req, res));
+    
+    
+    // );
 
   // UserDetailsSchema.findOne({ Username: loginDetails })
   //   .then(doc => {
