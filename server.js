@@ -221,8 +221,8 @@ app.post("/signup_27031996_saf", function (req, res) {
     else if (user) {
       passport.authenticate("local")(req, res, function() {
         console.log(`${process.env.REACT_URL}/cust_bio_data`);
-        res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-      });
+      })
+      res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
     }
     else {
       console.log("Some Issue, Debug it...");
