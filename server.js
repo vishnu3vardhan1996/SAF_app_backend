@@ -288,7 +288,7 @@ app.post("/signup_27031996_saf", function (req, res) {
   //     });
   //     res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
   //   });
-})
+});
 
 app.post("/login", function (req, res) {
   const loginDetails = req.body.logindetails;
