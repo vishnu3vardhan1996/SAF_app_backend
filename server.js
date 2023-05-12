@@ -736,7 +736,7 @@ let InterestsDB = [];
 app.get("/cust_update/:cardno", (req, res) => {
   // custUpdateNo=req.body;
   const custCardNo = req.params.cardno;
-  // console.log(custCardNo);
+  console.log(custCardNo);
 
   Promise.all([
     Saf.find({ Customer_number: custCardNo }, { _id: 0 }),
