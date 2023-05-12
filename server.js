@@ -691,35 +691,35 @@ app.post("/cust_update/:cardno", (req, res) => {
 
   Saf.findOneAndUpdate({ Customer_number: cardNoOfCustomer }, { $set: { Status: custUpdateNo } }, { new: true })
     .then(doc => {
-      // console.log(doc);
+      console.log(doc);
     })
     .catch(err => {
-      // console.log(err);
+      console.log(err);
     });
 
   Saf.findOneAndUpdate({ Customer_number: cardNoOfCustomer }, { $set: { Payment_close_date: paymentClosedDate } }, { new: true })
     .then(doc => {
-      // console.log(doc);
+      console.log(doc);
     })
     .catch(err => {
-      // console.log(err);
+      console.log(err);
     });
 
   DeRecSchema.findOneAndUpdate({ Customer_number: cardNoOfCustomer }, deReceivedDataObject, { upsert: true, new: true })
     .then(doc => {
-      // console.log(doc);
+      console.log(doc);
     })
     .catch(err => {
-      // console.log(err);
+      console.log(err);
     });
 
   if (custNoFromIndividualComp) {
     CommSchema.findOneAndUpdate({ Customer_number: custNoFromIndividualComp }, textValueSaveInDB, { upsert: true, new: true })
       .then(doc => {
-        // console.log(doc);
+        console.log(doc);
       })
       .catch(err => {
-        // console.log(err);
+        console.log(err);
       });
   }
 
@@ -773,10 +773,10 @@ app.post("/interest_update", function (req, res) {
   //Storing Interest in DB
   InterestSchema.findOneAndUpdate({ Customer_number: interestCustCardNo }, { $push: { "Interest.Interest_Received_Date": interestReceivedDate, "Interest.Interest": actualInterest, "Interest.Interest_Rate": interestRate, "Interest.Interest_for_Date": interestDate } }, { upsert: true, new: true })
     .then(doc => {
-      // console.log(doc);
+      console.log(doc);
     })
     .catch(err => {
-      // console.log(err);
+      console.log(err);
     });
 
   // console.log(interestReceivedDate);
