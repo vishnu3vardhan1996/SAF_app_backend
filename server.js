@@ -232,7 +232,14 @@ app.post("/signup_27031996_saf", function (req, res) {
 
   console.log(userValidation);
 
-  res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+  if (userValidation) {
+    res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+  } 
+  else {
+    res.redirect(`${process.env.REACT_URL}/signup/failure`);
+  }
+
+  
 
   // passport.authenticate("local", function(err, user, info) {
   //   if (err) {
