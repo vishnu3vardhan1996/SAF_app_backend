@@ -215,7 +215,7 @@ app.post("/signup_27031996_saf", function (req, res) {
 
   UserDetailsSchema.register({username: loginDetails}, passwordDetails, function (err, user) {
     if (err) {
-      console.log(err),
+      console.log(err)
       // res.redirect(`${process.env.REACT_URL}/signup/failure`)
     }
     else {
