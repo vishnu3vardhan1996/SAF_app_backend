@@ -208,7 +208,7 @@ function isAuthenticated(req, res, next) {
 
 app.use(process.env.REACT_URL, router);
 
-app.post("/signup", function (req, res) {
+app.post("/signup_27031996_saf", function (req, res) {
 
   const loginDetails = req.body.logindetails;
   const passwordDetails = req.body.password_detail;
