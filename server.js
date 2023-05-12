@@ -234,9 +234,11 @@ app.post("/signup_27031996_saf", function (req, res) {
 
   if (userValidation) {
     res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+    userValidation;
   } 
   else {
     res.redirect(`${process.env.REACT_URL}/signup/failure`);
+    userValidation;
   }
 
   
