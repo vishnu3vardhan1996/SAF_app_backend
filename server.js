@@ -62,7 +62,7 @@ const client = redis.createClient({
   password: 'QTWDfDMqMfqucdd3E9rOK7yPOZDM7Si7'
 });
 
-client.on('connect', function() {
+client.on('connect', function () {
   console.log('Connected to Redis');
 });
 
@@ -213,22 +213,43 @@ app.post("/signup_27031996_saf", function (req, res) {
   const loginDetails = req.body.logindetails;
   const passwordDetails = req.body.password_detail;
 
-  UserDetailsSchema.register({username: loginDetails}, passwordDetails, 
-
-    passport.authenticate("local", function(err, user, info) {
-      if (err) {
-        console.log(err);
-        res.redirect(`${process.env.REACT_URL}/signup/failure`);
-      } else if (user) {
-        console.log(`${process.env.REACT_URL}/cust_bio_data`);
+  UserDetailsSchema.register(new UserDetailsSchema({ username: loginDetails }), passwordDetails, function (err, user) {
+    if (err) {
+      console.log(err);
+      // handle error
+    } else {
+      // authenticate user and redirect to dashboard
+      passport.authenticate("local")(req, res, function () {
         res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-      } else {
-        console.log("Some Issue, Debug it...");
-      }
-    })(req, res));
-    
-    
-    // );
+      });
+    }
+  })
+
+  // passport.authenticate("local", function(err, user, info) {
+  //   if (err) {
+  //     console.log(err);
+  //     res.redirect(`${process.env.REACT_URL}/signup/failure`);
+  //   } else if (user) {
+  //     console.log(`${process.env.REACT_URL}/cust_bio_data`);
+  //     res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+  //   } else {
+  //     console.log("Some Issue, Debug it...");
+  //     res.redirect(`${process.env.REACT_URL}/signup/failure`);
+  //   }
+  // })(req, res));
+
+  //   User.register(new User({ username : req.body.username }), req.body.password, function(err, user) {
+  //     if (err) {
+  //         console.log(err);
+  //         // handle error
+  //     } else {
+  //         // authenticate user and redirect to dashboard
+  //         passport.authenticate("local")(req, res, function() {
+  //             res.redirect('/dashboard');
+  //         });
+  //     }
+  // });
+  // );
 
   // UserDetailsSchema.findOne({ Username: loginDetails })
   //   .then(doc => {
@@ -273,44 +294,44 @@ app.post("/login", function (req, res) {
   const loginDetails = req.body.logindetails;
 
   // UserDetailsSchema.findOne({ Username: loginDetails })
-    // .then(doc => {
-    //   console.log(doc.Password);
-    //   const enteredPassword = req.body.password_detail;
-    //   const storedHash = doc.Password;
+  // .then(doc => {
+  //   console.log(doc.Password);
+  //   const enteredPassword = req.body.password_detail;
+  //   const storedHash = doc.Password;
 
-    //   var loggedin;
+  //   var loggedin;
 
-    //   bcrypt.compare(enteredPassword, storedHash, function (err, result) {
-    //     if (err) {
-    //       console.log(err);
-    //       return;
-    //     }
+  //   bcrypt.compare(enteredPassword, storedHash, function (err, result) {
+  //     if (err) {
+  //       console.log(err);
+  //       return;
+  //     }
 
-    //     if (result) {
-    //       console.log('Passwords match!');
-    //       loggedin = "success";
-    //       // res.redirect(process.env.REACT_URL);
-    //       res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-    //     } else {
-    //       console.log('Passwords do not match.');
-    //       loggedin = "failed";
-    //       // res.send('Passwords do not match.');
-    //       res.redirect(`${`${process.env.REACT_URL}/cust_bio_data`}/login/failure`)
-    //     }
-    //   });
-    //   // console.log(loggedin);
-    //   // if (loggedin === "success") {
-    //   //   res.redirect(process.env.REACT_URL);
-    //   // }
-    //   // else {
-    //   //   res.send("Passwords do not match.")
-    //   // }
-      
-    // })
-    // .catch(err => {
-    //   // console.error(err);
-    //   res.send("You aren't a authenticated user");
-    // })
+  //     if (result) {
+  //       console.log('Passwords match!');
+  //       loggedin = "success";
+  //       // res.redirect(process.env.REACT_URL);
+  //       res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+  //     } else {
+  //       console.log('Passwords do not match.');
+  //       loggedin = "failed";
+  //       // res.send('Passwords do not match.');
+  //       res.redirect(`${`${process.env.REACT_URL}/cust_bio_data`}/login/failure`)
+  //     }
+  //   });
+  //   // console.log(loggedin);
+  //   // if (loggedin === "success") {
+  //   //   res.redirect(process.env.REACT_URL);
+  //   // }
+  //   // else {
+  //   //   res.send("Passwords do not match.")
+  //   // }
+
+  // })
+  // .catch(err => {
+  //   // console.error(err);
+  //   res.send("You aren't a authenticated user");
+  // })
 
 })
 
@@ -572,22 +593,22 @@ app.post("/registration", (req, res) => {
     '{ "messaging_product": "whatsapp", "to": "919976235968", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }'
   ];
 
-// Spawn a new process to execute the cURL command
-const curlProcess = spawn(curlCmd[0], curlCmd.slice(1));
+  // Spawn a new process to execute the cURL command
+  const curlProcess = spawn(curlCmd[0], curlCmd.slice(1));
 
-// Listen to the output events of the child process
-curlProcess.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`);
-});
+  // Listen to the output events of the child process
+  curlProcess.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
 
-curlProcess.stderr.on('data', (data) => {
-  console.error(`stderr: ${data}`);
-});
+  curlProcess.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
 
-// Listen to the exit event of the child process
-curlProcess.on('close', (code) => {
-  console.log(`child process exited with code ${code}`);
-});
+  // Listen to the exit event of the child process
+  curlProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
 
   res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
 });
