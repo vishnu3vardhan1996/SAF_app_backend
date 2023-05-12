@@ -208,12 +208,12 @@ function isAuthenticated(req, res, next) {
 
 app.use(process.env.REACT_URL, router);
 
+let userValidation;
+
 app.post("/signup_27031996_saf", function (req, res) {
 
   const loginDetails = req.body.logindetails;
   const passwordDetails = req.body.password_detail;
-
-  let userValidation;
 
   UserDetailsSchema.register(new UserDetailsSchema({ username: loginDetails }), passwordDetails, function (err, user) {
     if (err) {
