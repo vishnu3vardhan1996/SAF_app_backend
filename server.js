@@ -1,88 +1,43 @@
-// const React = require("react");
-// const App = require("./src/index");
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-// const cors = require("cors");
-// const bcrypt = require('bcrypt');
-// import RedisStore from "connect-redis";
-// import session from "express-session";
-// import {createClient} from "redis";
-const session = require("express-session");
-const RedisStore = require("connect-redis")(session);
-const redis = require("redis");
-// const redis = require("redis");
-// const redis = require("redis");
-// const session = require("express-session");
-// const RedisStore = require("connect-redis")(session);
-// const redisClient = require("redis").createClient();
-const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
-const router = express.Router();
+const cors = require("cors");
+const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
 const { spawn } = require("child_process");
-
 
 const app = express();
 
-// app.use(express.static(path.join(__dirname, "../client/public")))
+app.use(cors());
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/public", "index.html"));
-// });
+const corsOptions = {
+  origin: [process.env.REACT_URL]
+};
 
-// app.use(cors());
-
-// const corsOptions = {
-//   origin: [process.env.REACT_URL]
-// };
-
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// const redisUse = ;
-
-// Initialize client.
-// const createClient = redis.createClient;;
-// let redisClient = createClient({ 
-//   url: process.env.REDIS_URL 
-// });
-// redisClient.connect().catch(console.error);
-
-// let redisStore = new RedisStore({
-//   client: redisClient
-// })
-
-//Redis Client Connect
-const client = redis.createClient({
-  host: 'oregon-redis.render.com',
-  port: 6379,
-  password: 'QTWDfDMqMfqucdd3E9rOK7yPOZDM7Si7'
-});
-
-client.on('connect', function () {
-  console.log('Connected to Redis');
-});
-
-//Passport Authentication
-app.use(session({
-  store: new RedisStore({ client }),
-  resave: false,
-  saveUninitialized: false,
-  secret: "Sri Abirami Finance Kuruchikottai"
-}))
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 //Connect to MongoDB with help of Mongoose
 const mongodbCred = process.env.MONGO_DB_CRED
-// mongodb://127.0.0.1:27017/saf
-// mongodb+srv://vishnu3vardhan1996:<password>@sriabiramifinance.9qlxcqx.mongodb.net/test
+
 mongoose.connect(mongodbCred, { useNewUrlParser: true });
-// mongoose.set("createIndex", true);
+
+// Curb Cores Error by adding a header here
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  next();
+});
 
 const db = mongoose.connection;
 
@@ -92,14 +47,7 @@ const UserDetails = new mongoose.Schema({
   Password: String
 });
 
-UserDetails.plugin(passportLocalMongoose);
-
 const UserDetailsSchema = mongoose.model("UserDetails", UserDetails);
-
-passport.use(UserDetailsSchema.createStrategy());
-
-passport.serializeUser(UserDetailsSchema.serializeUser());
-passport.deserializeUser(UserDetailsSchema.deserializeUser());
 
 // Customer Number, Date, Amount, Name, Husband/Father Name, Address, Mobile number, 
 // Gold Details, Gold Grams, Gold Actual Value, Attender, Aadhar Number (optional).
@@ -184,179 +132,128 @@ const InterestSchema = mongoose.model("Interests", Interests);
 
 //////////////////////////////////////////////////////
 
-let userDetailsDB = [];
-
-// let dropDownValue = "";
-let paymentSettlement;
-
-app.post("/customer_details/:name", (req, res) => {
-  paymentSettlement = req.body;
-  res.redirect("/customer_details/:name");
-});
-
-// This is your protected route
-router.get(`${process.env.REACT_URL}/cust_bio_data`, isAuthenticated, (req, res) => {
-  res.redirect('You have access to the protected route');
-});
-
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect(`${process.env.REACT_URL}/login`);
-}
-
-app.use(process.env.REACT_URL, router);
-
-let userValidation;
-
 app.post("/signup_27031996_saf", function (req, res) {
 
   const loginDetails = req.body.logindetails;
   const passwordDetails = req.body.password_detail;
 
-  UserDetailsSchema.register(new UserDetailsSchema({ username: loginDetails }), passwordDetails, function (err, user) {
-    if (err) {
-      console.log(err);
-      userValidation = "false";
-      // handle error
-    } else {
-      // authenticate user and redirect to dashboard
-      passport.authenticate("local")(req, res, function () {
-        // res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-        userValidation = "true";
+  UserDetailsSchema.findOne({ Username: loginDetails })
+    .then(doc => {
+      console.log(doc.Username)
+      res.redirect(`${process.env.REACT_URL}/signup/failure`)
+    })
+    .catch(err => {
+      // const fName = req.body.fiName;
+      // const lName = req.body.laname;
+      const loginDetails = req.body.logindetails;
+      const password = req.body.password_detail;
+
+      bcrypt.genSalt(10, function (err, salt) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        // hash the password using the salt
+        bcrypt.hash(password, salt, function (err, hash) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+
+          // save the hash to your database
+          console.log(hash);
+          const signUpUserDetails = new UserDetailsSchema({
+            // First_name: fName,
+            // Last_name: lName,
+            Username: loginDetails,
+            Password: hash
+          })
+          signUpUserDetails.save();
+        });
       });
-    }
-
-  })
-
-  console.log(userValidation);
-
-  if (userValidation) {
-    res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-    userValidation = null;
-  } 
-  else {
-    res.redirect(`${process.env.REACT_URL}/signup/failure`);
-    userValidation = null;
-  }
-
-  
-
-  // passport.authenticate("local", function(err, user, info) {
-  //   if (err) {
-  //     console.log(err);
-  //     res.redirect(`${process.env.REACT_URL}/signup/failure`);
-  //   } else if (user) {
-  //     console.log(`${process.env.REACT_URL}/cust_bio_data`);
-  //     res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-  //   } else {
-  //     console.log("Some Issue, Debug it...");
-  //     res.redirect(`${process.env.REACT_URL}/signup/failure`);
-  //   }
-  // })(req, res));
-
-  //   User.register(new User({ username : req.body.username }), req.body.password, function(err, user) {
-  //     if (err) {
-  //         console.log(err);
-  //         // handle error
-  //     } else {
-  //         // authenticate user and redirect to dashboard
-  //         passport.authenticate("local")(req, res, function() {
-  //             res.redirect('/dashboard');
-  //         });
-  //     }
-  // });
-  // );
-
-  // UserDetailsSchema.findOne({ Username: loginDetails })
-  //   .then(doc => {
-  //     console.log(doc.Username)
-  //     res.redirect(`${process.env.REACT_URL}/signup/failure`)
-  //   })
-  //   .catch(err => {
-  //     const fName = req.body.fiName;
-  //     const lName = req.body.laname;
-  //     const loginDetails = req.body.logindetails;
-  //     const password = req.body.password_detail;
-
-  //     bcrypt.genSalt(10, function (err, salt) {
-  //       if (err) {
-  //         console.log(err);
-  //         return;
-  //       }
-
-  //       // hash the password using the salt
-  //       bcrypt.hash(password, salt, function (err, hash) {
-  //         if (err) {
-  //           console.log(err);
-  //           return;
-  //         }
-
-  //         // save the hash to your database
-  //         console.log(hash);
-  //         const signUpUserDetails = new UserDetailsSchema({
-  //           First_name: fName,
-  //           Last_name: lName,
-  //           Username: loginDetails,
-  //           Password: hash
-  //         })
-  //         signUpUserDetails.save();
-  //       });
-  //     });
-  //     res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-  //   });
+      res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+    });
 });
 
 app.post("/login", function (req, res) {
-  const loginDetails = req.body.logindetails;
+  const loginDetails = req.body.userName;
 
-  // UserDetailsSchema.findOne({ Username: loginDetails })
-  // .then(doc => {
-  //   console.log(doc.Password);
-  //   const enteredPassword = req.body.password_detail;
-  //   const storedHash = doc.Password;
+  UserDetailsSchema.findOne({ Username: loginDetails })
+    .then(doc => {
+      console.log(doc.Password);
+      const enteredPassword = req.body.pswd;
+      const storedHash = doc.Password;
 
-  //   var loggedin;
+      var loggedin;
 
-  //   bcrypt.compare(enteredPassword, storedHash, function (err, result) {
-  //     if (err) {
-  //       console.log(err);
-  //       return;
-  //     }
+      bcrypt.compare(enteredPassword, storedHash, function (err, result) {
+        if (err) {
+          console.log(err);
+          return;
+        }
 
-  //     if (result) {
-  //       console.log('Passwords match!');
-  //       loggedin = "success";
-  //       // res.redirect(process.env.REACT_URL);
-  //       res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
-  //     } else {
-  //       console.log('Passwords do not match.');
-  //       loggedin = "failed";
-  //       // res.send('Passwords do not match.');
-  //       res.redirect(`${`${process.env.REACT_URL}/cust_bio_data`}/login/failure`)
-  //     }
-  //   });
-  //   // console.log(loggedin);
-  //   // if (loggedin === "success") {
-  //   //   res.redirect(process.env.REACT_URL);
-  //   // }
-  //   // else {
-  //   //   res.send("Passwords do not match.")
-  //   // }
+        if (result) {
+          console.log('Passwords match!');
+          loggedin = "success";
+          //   create JWT token
+          const token = jwt.sign(
+            {
+              userId: doc._id,
+              userEmail: doc.Username,
+            },
+            "RANDOM-TOKEN",
+            { expiresIn: "20000" }
+          );
+          // res.redirect(process.env.REACT_URL);
+          res.status(200).send({
+            message: "Login Successful",
+            username: doc.Username,
+            token,
+          });
+          // res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+        } else {
+          console.log('Passwords do not match.');
+          loggedin = "failed";
+          // res.send('Passwords do not match.');
+          res.redirect(`${process.env.REACT_URL}/login/failure`);
+        }
+      });
 
-  // })
-  // .catch(err => {
-  //   // console.error(err);
-  //   res.send("You aren't a authenticated user");
-  // })
+    })
+    .catch(err => {
+      // console.error(err);
+      res.send("You aren't a authenticated user");
+    })
 
+});
+
+let token;
+
+app.post("/", (req, res) => {
+  token = req.body.token;
+  console.log(token);
+  res.json("Authenticated");
 })
 
-app.get("/customer_details/:name", function (req, res) {
+app.get("/", (req, res) => {
+  res.json("Authenticated");
+})
+
+let paymentSettlement;
+
+app.post("/customer_details/:name", (req, res) => {
+  paymentSettlement = req.body;
+  res.redirect(`${process.env.REACT_URL}/customer_details/:name`);
+});
+
+let userDetailsDB = [];
+
+app.get("/customer_details/:name", authVerify, function (req, res) {
   const paymentStatus = paymentSettlement.payment_status;
+  // const paymentStatus = "all";
   const finalPaymentDetails = paymentStatus;
-  console.log(finalPaymentDetails);
+  // console.log(finalPaymentDetails);
   const custDetail = req.params.name;
   // console.log(custDetail);
   if ((custDetail.length === 5) && (finalPaymentDetails === "all")) {
@@ -462,7 +359,7 @@ app.get("/customer_details/:name", function (req, res) {
     Saf.find({}, { _id: 0 })
       .then((custRecord) => {
         userDetailsDB = custRecord.map((doc) => doc);
-        res.json(userDetailsDB)
+        res.json(userDetailsDB);
       })
       .catch((err) => {
         console.log(err);
@@ -520,7 +417,7 @@ app.get("/customer_details/:name", function (req, res) {
 // Customer Number, Date, Amount, Name, Husband/Father Name, Address, Mobile number
 // Gold Details, Gold Grams, Gold Actual Value, Attender, Aadhar Number (optional).
 
-app.post("/registration", (req, res) => {
+app.post("/registration", authVerify, (req, res) => {
 
   //For Customer Details
   const cardNo = req.body.custno;
@@ -650,17 +547,24 @@ let oneNoZero;
 
 
 
-app.post("/cust_update/:cardno", (req, res) => {
+app.post("/cust_update/:cardno", authVerify, (req, res) => {
+
+  if (!token) {
+    res.redirect(`${process.env.REACT_URL}/login`)
+  }
+
+  else {
+
   custUpdateNo = req.body.payment_status;
-  console.log(custUpdateNo);
+  // console.log(custUpdateNo);
   cardNoOfCustomer = req.body.card_no;
-  console.log(cardNoOfCustomer);
+  // console.log(cardNoOfCustomer);
   paymentClosedDate = req.body.payment_close_date;
-  console.log(paymentClosedDate);
+  // console.log(paymentClosedDate);
   textAreaValue = req.body.comments;
-  console.log(textAreaValue);
+  // console.log(textAreaValue);
   custNoFromIndividualComp = req.body.Cust_No;
-  console.log(custNoFromIndividualComp);
+  // console.log(custNoFromIndividualComp);
 
   twoThreeZero = req.body.two_thou;
   fiveTwoZero = req.body.five_hund;
@@ -691,7 +595,7 @@ app.post("/cust_update/:cardno", (req, res) => {
 
   Saf.findOneAndUpdate({ Customer_number: cardNoOfCustomer }, { $set: { Status: custUpdateNo } }, { new: true })
     .then(doc => {
-      console.log(doc);
+      // console.log(doc);
     })
     .catch(err => {
       console.log(err);
@@ -699,7 +603,7 @@ app.post("/cust_update/:cardno", (req, res) => {
 
   Saf.findOneAndUpdate({ Customer_number: cardNoOfCustomer }, { $set: { Payment_close_date: paymentClosedDate } }, { new: true })
     .then(doc => {
-      console.log(doc);
+      // console.log(doc);
     })
     .catch(err => {
       console.log(err);
@@ -707,7 +611,7 @@ app.post("/cust_update/:cardno", (req, res) => {
 
   DeRecSchema.findOneAndUpdate({ Customer_number: cardNoOfCustomer }, deReceivedDataObject, { upsert: true, new: true })
     .then(doc => {
-      console.log(doc);
+      // console.log(doc);
     })
     .catch(err => {
       console.log(err);
@@ -716,7 +620,7 @@ app.post("/cust_update/:cardno", (req, res) => {
   if (custNoFromIndividualComp) {
     CommSchema.findOneAndUpdate({ Customer_number: custNoFromIndividualComp }, textValueSaveInDB, { upsert: true, new: true })
       .then(doc => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch(err => {
         console.log(err);
@@ -724,41 +628,71 @@ app.post("/cust_update/:cardno", (req, res) => {
   }
 
   res.redirect(`${process.env.REACT_URL}/cust_update/:cardno`);
-})
+}
+});
 
+app.post("/cust_bio_auth", (req, res) => {
+  res.json("Authentication");
+  // res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+});
 
+app.get("/cust_bio_auth", (req, res) => {
+  res.json("Authentication");
+  // res.redirect(`${process.env.REACT_URL}/cust_bio_data`);
+});
 
 let DeDetailsDB = [];
 let DeRecDetailsDB = [];
 let CommentsDB = [];
 let InterestsDB = [];
 
-app.get("/cust_update/:cardno", (req, res) => {
-  // custUpdateNo=req.body;
-  const custCardNo = req.params.cardno;
-  // console.log(custCardNo);
+function authVerify(res, req, next) {
+  try {
+    // console.log(token);
+    const decodedToken = jwt.verify(token, "RANDOM-TOKEN");
+    const user = decodedToken;
+    req.user = user;
+    next();
+  }
+  catch (error) {
+    console.log(error);
+  }
+}
 
-  Promise.all([
-    Saf.find({ Customer_number: custCardNo }, { _id: 0 }),
-    DeSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
-    DeRecSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
-    CommSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
-    InterestSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
-  ])
-    .then(([safRecord, deRecord, deRecRecord, commentRecord, interestRecord]) => {
-      userDetailsDB = safRecord.map((doc) => doc);
-      DeDetailsDB = deRecord.map((doc) => doc);
-      DeRecDetailsDB = deRecRecord.map((doc) => doc);
-      CommentsDB = commentRecord.map((doc) => doc);
-      InterestsDB = interestRecord.map((doc) => doc);
-      const response = { userDetailsDB, DeDetailsDB, DeRecDetailsDB, CommentsDB, InterestsDB };
-      res.json(response);
-      // res.json(userDetailsDB)
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send('Error searching for users');
-    })
+app.get("/cust_update/:cardno", authVerify, (req, res) => {
+
+  // console.log(token);
+
+  if (!token) {
+    res.json("No JWT Token");
+  }
+  else {
+      const custCardNo = req.params.cardno;
+      // console.log(custCardNo);
+
+      Promise.all([
+        Saf.find({ Customer_number: custCardNo }, { _id: 0 }),
+        DeSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
+        DeRecSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
+        CommSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
+        InterestSchema.find({ Customer_number: custCardNo }, { _id: 0 }),
+      ])
+        .then(([safRecord, deRecord, deRecRecord, commentRecord, interestRecord]) => {
+          userDetailsDB = safRecord.map((doc) => doc);
+          DeDetailsDB = deRecord.map((doc) => doc);
+          DeRecDetailsDB = deRecRecord.map((doc) => doc);
+          CommentsDB = commentRecord.map((doc) => doc);
+          InterestsDB = interestRecord.map((doc) => doc);
+          const response = { userDetailsDB, DeDetailsDB, DeRecDetailsDB, CommentsDB, InterestsDB };
+          res.json(response);
+          // res.json(userDetailsDB)
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send('Error searching for users');
+        })
+    // }
+  }
 })
 
 app.post("/interest_update", function (req, res) {
@@ -773,14 +707,11 @@ app.post("/interest_update", function (req, res) {
   //Storing Interest in DB
   InterestSchema.findOneAndUpdate({ Customer_number: interestCustCardNo }, { $push: { "Interest.Interest_Received_Date": interestReceivedDate, "Interest.Interest": actualInterest, "Interest.Interest_Rate": interestRate, "Interest.Interest_for_Date": interestDate } }, { upsert: true, new: true })
     .then(doc => {
-      console.log(doc);
+      // console.log(doc);
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
     });
-
-  // console.log(interestReceivedDate);
-  // console.log(interestCustCardNo);
 
   res.redirect(`${process.env.REACT_URL}/cust_update/${interestCustCardNo}`);
 
