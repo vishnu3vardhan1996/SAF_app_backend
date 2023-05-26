@@ -203,7 +203,7 @@ app.post("/login", function (req, res) {
               userEmail: doc.Username,
             },
             "RANDOM-TOKEN",
-            { expiresIn: "20000" }
+            { expiresIn: "1200000" }
           );
           // res.redirect(process.env.REACT_URL);
           res.status(200).send({
